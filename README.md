@@ -8,7 +8,12 @@ I maintain a daily updated (if I use this software) archive section. This is mad
 
 ## Disclaimer
 
-MySides is a personal tool designed to scrape news from APNews. Please note that all material downloaded, used, and reworked by this software is the property of APNews. This tool aims to provide a quick overview of daily news. For more information, please refer to the APNews Terms of Service.
+MySides is a personal tool designed to scrape news from various sources. Please note that all material downloaded, used, and reworked by this software is the property of various sources. This tool aims to provide a quick overview of daily news. For more information, please refer to the various sources Terms of Service.
+
+## Built-in sites
+
+[x] APNews (world news)
+[x] EuObserver (rss feed)
 
 ## Work In Progress
 
@@ -17,7 +22,7 @@ Stay tuned.
 
 ## TLDR
 
-MySides scrapes the latest news from APNews and uses Perplexity AI APIs to summarize them into a concise, single-page format.
+MySides scrapes the latest news from various sources and uses Perplexity AI APIs to summarize them into a concise, single-page format.
 
 ## Perplexity AI?
 

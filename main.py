@@ -1,47 +1,16 @@
 import os
-import requests
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 # Our modules
 import apnews
+import euobserver
 import summarizer
 
 load_dotenv()
 
 # Loading environment variables
-news_type = os.getenv("NEWS")
 pplx_api_key = os.getenv("PPLX_API_KEY")
 model = os.getenv("MODEL")
-
-# Main menu
-def menu():
-    global news_type
-    available_news = os.getenv("POSSIBLE_NEWS_VALUES")
-    available_news = available_news.split(",")
-    print("[ Welcome to MySides ]")
-    print("[+] Available news: ")
-    counter = 0
-    for avail in available_news:
-        counter += 1
-        print(str(counter) + ") " + avail.strip().replace('"', ""))
-
-    print("[+] Current news: " + news_type)
-    print("[+] Press enter to continue or type a number to change the news type.")
-    news_type_n = input().strip()
-    if news_type_n == "":
-        return
-    try:
-        news_type_n = int(news_type_n)
-    except Exception:
-        menu()
-        print("[!] Invalid news type.")
-    news_type_n -= 1
-    try:
-        news_type = available_news[news_type_n]
-    except Exception:
-        menu()
-        print("[!] Invalid news type.")
 
 # Fetch and summarize the article
 def transform_links(links):
@@ -70,10 +39,14 @@ def transform_links(links):
     return datas
 
 # Downloads the site and extracting the data using the appropriate module
-def extract_data(url):
-    response = requests.get(url, timeout=5)
-    soup = BeautifulSoup(response.text, "html.parser")
-    links = apnews.fetchAndDigest(soup)
+def extract_data():
+    links = []
+
+    # Plug in your module here (links.extend(your_module.fetchAndDigest())
+    links.extend(apnews.fetchAndDigest())
+    links.extend(euobserver.fetchAndDigest())
+
+    print("[+] Total news: " + str(len(links)))
     datas = transform_links(links)
     return datas
 
@@ -85,16 +58,10 @@ def handle_pagination(soup):
 
 
 def main():
-    global news_type
-    url = "https://apnews.com/" + news_type
     all_data = []
 
-    while url:
-        datas = extract_data(url)
-        all_data.extend(datas)
-        url = handle_pagination(
-            BeautifulSoup(requests.get(url, timeout=5).text, "html.parser")
-        )
+    datas = extract_data()
+    all_data.extend(datas)
 
     # Prepare a nice CSS for the viewing page (nice and clean)
     css = """
@@ -116,7 +83,7 @@ def main():
     """
 
     # Create a nice HTML view of all the articles each one in its own page
-    html = "<html><head><title>APNews Unbiased News</title>"
+    html = "<html><head><title>Unbiased News</title>"
     html += "<style>" + css + "</style>"
     html += "</head><body>"
     for item in all_data:
@@ -135,6 +102,4 @@ def main():
 
 
 if __name__ == "__main__":
-    menu()
-    print("[+] News type: " + news_type)
     main()

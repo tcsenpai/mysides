@@ -1,6 +1,13 @@
+from bs4 import BeautifulSoup
+import requests
 
-def fetchAndDigest(soup):
+def getSoup():
+    response = requests.get("https://apnews.com/world-news", timeout=5)
+    soup = BeautifulSoup(response.text, "html.parser")
+    return soup
 
+def fetchAndDigest():
+    soup = getSoup()
     news_items = soup.find_all("div", class_="PagePromo")
     print("[+] Filtering out invalid articles...")
     links = []
