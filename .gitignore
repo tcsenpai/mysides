@@ -5,3 +5,4 @@ response
 models/
 news/
 .env
+__pycache__/
