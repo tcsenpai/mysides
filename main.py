@@ -116,6 +116,9 @@ def main():
     with open("allsides.html", "w+") as f:
         f.write(html)
 
+    # Archiving (skip if causes errors)
+    os.system("./archiver.sh")
+
     print("Total articles: ", len(all_data))
     # Do some math to find the number of articles per bias rating
     bias_ratings = {}
