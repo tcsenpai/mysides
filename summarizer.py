@@ -1,46 +1,36 @@
-import os
-
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
+def summarize(link, pplx_api_key, model):
+    headers = {
+        "accept": "application/json",
+        "authorization": "Bearer " + pplx_api_key,
+        "content-type": "application/json",
+    }
 
-pplx_api_key = os.getenv("PPLX_API_KEY")
-model = os.getenv("MODEL")
+    json_data = {
+        "model": model,
+        "messages": [
+            {
+                "role": "system",
+                "content": "Be precise, concise and clear. Also proofread what you write and make sure not to hallucinate.",
+            },
+            {
+                "role": "user",
+                "content": "Read and summarize: " + link,
+            },
+        ],
+    }
 
-with open("link", "r") as f:
-    article_link = f.read().strip()
+    response = requests.post(
+        "https://api.perplexity.ai/chat/completions",
+        headers=headers,
+        json=json_data,
+        timeout=5,
+    )
 
-headers = {
-    "accept": "application/json",
-    "authorization": "Bearer " + pplx_api_key,
-    "content-type": "application/json",
-}
-
-json_data = {
-    "model": model,
-    "messages": [
-        {
-            "role": "system",
-            "content": "Be precise, concise and clear",
-        },
-        {
-            "role": "user",
-            "content": "Search and summarize: " + article_link,
-        },
-    ],
-}
-
-response = requests.post(
-    "https://api.perplexity.ai/chat/completions",
-    headers=headers,
-    json=json_data,
-    timeout=5,
-)
-
-response = response.json()
-# print(response)
-
-# print(response["choices"][0]["message"]["content"])
-with open("response", "w+") as response_file:
-    response_file.write(response["choices"][0]["message"]["content"])
+    response = response.json()
+    # print(response)
+    try:
+        return response["choices"][0]["message"]["content"]
+    except Exception as e:
+        return "Error: " + str(e)

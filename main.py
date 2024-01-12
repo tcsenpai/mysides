@@ -1,68 +1,80 @@
 import os
-
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
+# Our modules
+import apnews
+import summarizer
 
+load_dotenv()
+
+# Loading environment variables
+news_type = os.getenv("NEWS")
+pplx_api_key = os.getenv("PPLX_API_KEY")
+model = os.getenv("MODEL")
+
+# Main menu
+def menu():
+    global news_type
+    available_news = os.getenv("POSSIBLE_NEWS_VALUES")
+    available_news = available_news.split(",")
+    print("[ Welcome to MySides ]")
+    print("[+] Available news: ")
+    counter = 0
+    for avail in available_news:
+        counter += 1
+        print(str(counter) + ") " + avail.strip().replace('"', ""))
+
+    print("[+] Current news: " + news_type)
+    print("[+] Press enter to continue or type a number to change the news type.")
+    news_type_n = input().strip()
+    if news_type_n == "":
+        return
+    try:
+        news_type_n = int(news_type_n)
+    except Exception:
+        menu()
+        print("[!] Invalid news type.")
+    news_type_n -= 1
+    try:
+        news_type = available_news[news_type_n]
+    except Exception:
+        menu()
+        print("[!] Invalid news type.")
+
+# Fetch and summarize the article
+def transform_links(links):
+    datas = []
+    counter = 0
+    print("[+] Extracting data from articles...")
+    for link in links:
+        counter += 1
+        print("[+] Article " + str(counter) + " of " + str(len(links)))
+        article_title = link[0]
+        article_link = link[1]
+        print("[ " + article_title + " ]")
+        print("[+] Extracting data from: " + article_link)
+        try:
+            article_summary = summarizer.summarize(article_link, pplx_api_key, model)
+        except Exception as e:
+            print(e)
+            print("[!] Invalid article. Skipping...")
+            continue
+        datas.append(
+            {
+                "article_title": article_title,
+                "article_link": article_link,
+                "article_summary": article_summary,
+            })
+    return datas
+
+# Downloads the site and extracting the data using the appropriate module
 def extract_data(url):
     response = requests.get(url, timeout=5)
     soup = BeautifulSoup(response.text, "html.parser")
-    news_items = soup.find_all("div", class_="news-item")
-    datas = []
-    tot_articles = len(news_items)
-    print("[+] Total news: " + str(tot_articles))
-    print("[+] Filtering out invalid articles...")
-    counter = 0
-    for news_item in news_items:
-        # Extract the article link and title
-        article_link = news_item.find_all("a")[0].get("href")
-        if "allsides.com" not in article_link:
-            tot_articles -= 1
-            continue
-        counter += 1
-        print("[+] Processing news: " + str(counter) + "/" + str(tot_articles))
-        article_title = news_item.find("div", class_="news-title").text.strip()
-        print("[*] Summarizing: " + article_link)
-        # Summarize the article
-        with open("link", "w+") as f:
-            f.write(article_link)
-        # trunk-ignore(bandit/B605)
-        # trunk-ignore(bandit/B607)
-        os.system("python summarizer.py")
-        print("[OK] Done. Proceeding...")
-        with open("response", "r") as f:
-            article_summary = f.read().strip()
-        # with open(article_title, "w+") as f:
-        # f.write(article_summary)
-        # Extract the source and media bias rating
-        try:
-            source_name = news_item.find("span").text
-        except Exception:
-            source_name = "Unknown"
-
-        try:
-            media_bias_rating = (
-                news_item.find("img")
-                .get("alt")
-                .replace("AllSides Media Bias Rating: ", "")
-                .lower()
-            )
-        except Exception:
-            media_bias_rating = "Unknown"
-
-        # Build the JSON
-        data = {
-            "article_link": article_link,
-            "article_title": article_title,
-            "article_summary": article_summary,
-            "source_name": source_name,
-            "media_bias_rating": media_bias_rating,
-        }
-
-        datas.append(data)
-
-    return datas
-
+    links = apnews.fetchAndDigest(soup)
+    transform_links(links)
 
 def handle_pagination(soup):
     next_page = soup.find("a", {"rel": "next"})
@@ -72,7 +84,8 @@ def handle_pagination(soup):
 
 
 def main():
-    url = "https://www.allsides.com/unbiased-balanced-news"
+    global news_type
+    url = "https://apnews.com/" + news_type
     all_data = []
 
     while url:
@@ -102,37 +115,25 @@ def main():
     """
 
     # Create a nice HTML view of all the articles each one in its own page
-    html = "<html><head><title>AllSides Unbiased News</title>"
+    html = "<html><head><title>APNews Unbiased News</title>"
     html += "<style>" + css + "</style>"
     html += "</head><body>"
     for item in all_data:
         html += "<h1>" + item["article_title"] + "</h1>"
-        html += "<h2>" + item["source_name"] + "</h2>"
-        html += "<h3>" + item["media_bias_rating"] + "</h3>"
         html += "<p>" + item["article_summary"] + "</p>"
         html += "<a href='" + item["article_link"] + "'>Read the full article</a>"
         html += "<hr>"
     html += "</body></html>"
-    with open("allsides.html", "w+") as f:
+    with open("ap.html", "w+") as f:
         f.write(html)
 
     # Archiving (skip if causes errors)
     os.system("./archiver.sh")
 
     print("Total articles: ", len(all_data))
-    # Do some math to find the number of articles per bias rating
-    bias_ratings = {}
-    for item in all_data:
-        if item["media_bias_rating"] in bias_ratings:
-            bias_ratings[item["media_bias_rating"]] += 1
-        else:
-            bias_ratings[item["media_bias_rating"]] = 1
-    # Assign percentages
-    for key in bias_ratings:
-        bias_ratings[key] = round(bias_ratings[key] / len(all_data) * 100, 2)
-
-    print(bias_ratings)
 
 
 if __name__ == "__main__":
+    menu()
+    print("[+] News type: " + news_type)
     main()

@@ -8,12 +8,12 @@ I maintain a daily updated (if I use this software) archive section. This is mad
 
 ## Disclaimer
 
-MySides is a personal tool designed to scrape news from AllSides. Please note that all material downloaded, used, and reworked by this software is the property of AllSides. This tool aims to provide a quick overview of daily news. For more information, please refer to the AllSides Terms of Service.
+MySides is a personal tool designed to scrape news from APNews. Please note that all material downloaded, used, and reworked by this software is the property of APNews. This tool aims to provide a quick overview of daily news. For more information, please refer to the APNews Terms of Service.
 
 
 ## TLDR
 
-MySides scrapes the latest news from AllSides and uses Perplexity AI APIs to summarize them into a concise, single-page format.
+MySides scrapes the latest news from APNews and uses Perplexity AI APIs to summarize them into a concise, single-page format.
 
 ## Perplexity AI?
 
@@ -31,4 +31,4 @@ In my experience, Perplexity AI offers more competitive API pricing than OpenAI.
 
 ## Read
 
-Check out allsides.html for the latest summary. The reports are saved into archive/ by default.
+Check out ap.html for the latest summary. The reports are saved into archive/ by default.

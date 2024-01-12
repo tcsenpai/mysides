@@ -8,4 +8,4 @@ CLEAN=${CLEAN// /_}
 CLEAN=${CLEAN//[^a-zA-Z0-9_]/}
 # finally, lowercase with TR
 CLEAN=`echo -n $CLEAN | tr A-Z a-z`
-cp allsides.html archive/$CLEAN.html
+cp ap.html archive/$CLEAN.html
