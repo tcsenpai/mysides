@@ -4,7 +4,7 @@ Your trustworthy unbiased news scraper.
 
 ## Disclaimer
 
-This tool is made for personal use, and should be used carefully. Being a scraper for (AllSides)[https://allsides.com], all the material downloaded, used and reworked by this software is property of AllSides.
+This tool is made for personal use, and should be used carefully. Being a scraper for [AllSides](https://allsides.com), all the material downloaded, used and reworked by this software is property of AllSides.
 
 This tool is intended to be used to quickly grasp an overview of the daily news.
 Please check AllSides ToS for more information.

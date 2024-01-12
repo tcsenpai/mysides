@@ -1,4 +1,5 @@
 #!/bin/bash
+
 pip install -r requirements.txt
 mkdir news
 cp .env.example .env
