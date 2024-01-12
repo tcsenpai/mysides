@@ -74,7 +74,8 @@ def extract_data(url):
     response = requests.get(url, timeout=5)
     soup = BeautifulSoup(response.text, "html.parser")
     links = apnews.fetchAndDigest(soup)
-    transform_links(links)
+    datas = transform_links(links)
+    return datas
 
 def handle_pagination(soup):
     next_page = soup.find("a", {"rel": "next"})
@@ -89,8 +90,8 @@ def main():
     all_data = []
 
     while url:
-        data = extract_data(url)
-        all_data.extend(data)
+        datas = extract_data(url)
+        all_data.extend(datas)
         url = handle_pagination(
             BeautifulSoup(requests.get(url, timeout=5).text, "html.parser")
         )
