@@ -10,6 +10,10 @@ I maintain a daily updated (if I use this software) archive section. This is mad
 
 MySides is a personal tool designed to scrape news from APNews. Please note that all material downloaded, used, and reworked by this software is the property of APNews. This tool aims to provide a quick overview of daily news. For more information, please refer to the APNews Terms of Service.
 
+## Work In Progress
+
+MySides is currently being extended to support multiple sites.
+Stay tuned.
 
 ## TLDR
 
