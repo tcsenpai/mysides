@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 # Our modules
 import apnews
-import euobserver
+import rss
 import summarizer
 
 load_dotenv()
@@ -42,9 +42,13 @@ def transform_links(links):
 def extract_data():
     links = []
 
+    # Add your rss link to the .env file
+    rss_links = os.getenv("ENABLED_RSS").split(",")
+    links.extend(rss.fetchAndDigest(rss_links))
+
     # Plug in your module here (links.extend(your_module.fetchAndDigest())
+    # TODO Programmatically scan and import modules
     links.extend(apnews.fetchAndDigest())
-    links.extend(euobserver.fetchAndDigest())
 
     print("[+] Total news: " + str(len(links)))
     datas = transform_links(links)

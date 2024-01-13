@@ -13,7 +13,7 @@ MySides is a personal tool designed to scrape news from various sources. Please 
 ## Built-in sites
 
 [x] APNews (world news)
-[x] EuObserver (rss feed)
+[x] Any RSS feed (by adding it to the .env file)
 
 ## Work In Progress
 
